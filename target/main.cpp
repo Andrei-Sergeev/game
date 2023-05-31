@@ -4,18 +4,12 @@
 #include "draw.h"
 #include "repo.h"
 #include <gl/glut.h>
+#include <string.h>
 
 #define SHOOT_INTERVAL 40
 
 
 int WindW, WindH;
-
-
-
-float randomFloat()
-{
-	return  -0.9f + (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))*2;
-}
 
 
 ObjectDescription* repo = NULL;
@@ -35,12 +29,28 @@ void Reshape(int width, int height) // Reshape function
 	WindH = height;
 }
 
+void DrawText(char* string) {
+	glColor3f(0.5f, 0.0f, 0.0f);
+	glRasterPos2f(-0.2, 0.0);
+	int len = (int)strlen(string);
+	for (int i = 0; i < len; i++) {
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
+	}
+
+}
+
 void Draw(void) // Window redraw function 
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	CheckAllMisselAndTarget(repo);
-	DrawAll(repo);
+	if (luncher->enable && cannon->enable) {
+		DrawAll(repo);
+	}
+	else {
+		char string[] = "This is end of the game";
+		DrawText(string);
+	}
 
 	glFlush();
 	glutSwapBuffers();
@@ -129,21 +139,9 @@ int main(int argc, char* argv[])
 	cannon = CreateCannon(repo);
 	repo = cannon;
 
-	// init random line
-	/*
-	for (float i = -0.8f; i < 0; i+=0.1f) {			
-		ObjectDescription *o = new ObjectDescription;
-		o->x = i;
-		o->y = i;
-		o->alpha = trunc(360.0f * randomFloat());
-		o->dx = randomFloat()*0.1f;
-		o->dy = randomFloat()*0.1f;
-		o->enable = true;
-		o->modelAndDraw = drawMissle;
-		repo = add(o, repo);
-	}
-	*/
-		
+	repo = CreateBarrier(repo, -1);
+	repo = CreateBarrier(repo, 1);
+
 	glutInit(&argc, argv);
 	glutInitWindowSize(WindW, WindH);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);

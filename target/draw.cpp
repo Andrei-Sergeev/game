@@ -78,16 +78,28 @@ void drawLuncher(ObjectDescription* model)
 	glPopMatrix();
 };
 
+
+
 void drawCannon(ObjectDescription* model)
 {
+	/*   2 игрока
 	if (model->x + model->dx < CANNON_SIZE1 && model->x + model->dx > -1.0f - CANNON_SIZE1) model->x += model->dx;
 	if (model->y + model->dy > -1.0f + LUNCHER_SIZE && model->y + model->dy < 1 - LUNCHER_SIZE) model->y += model->dy;
 	model->dx = 0;
 	model->dy = 0;
+	*/
+
+	if (model->x + model->dx < CANNON_SIZE1 && model->x + model->dx > -1.0f - CANNON_SIZE1) model->x += model->dx; else model->dx *= -1;
+	if (model->y + model->dy > -1.0f + LUNCHER_SIZE && model->y + model->dy < 1 - LUNCHER_SIZE) model->y += model->dy; else model->dy *= -1;
+
+//  2 игрока
+//	model->dx = 0;
+//	model->dy = 0;
+
+
 
 
 	glPushMatrix();
-	//glRotatef(model->alpha, 0.0f, 0.0f, 1.0f);
 
 	glLineWidth(3);
 	if (model->shootCannon) {
@@ -104,5 +116,21 @@ void drawCannon(ObjectDescription* model)
 	glVertex2f(model->x - LUNCHER_SIZE, model->y + LUNCHER_SIZE);
 	glEnd();
 	glPopMatrix();
-};
+}
+
+void drawBarrier(ObjectDescription* model)
+{
+	glPushMatrix();
+
+	glLineWidth(4);
+	glColor3f(0.4f, 0.4f, 0.4f);
+
+	glBegin(GL_LINES);
+	glVertex2f(model->x, model->y - LUNCHER_SIZE);
+	glVertex2f(model->x, model->y + LUNCHER_SIZE);
+	glEnd();
+	glPopMatrix();
+
+}
+;
 

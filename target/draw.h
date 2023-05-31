@@ -23,4 +23,5 @@ void drawMissleLuncher(ObjectDescription* model);
 
 void drawLuncher(ObjectDescription* model);
 void drawCannon(ObjectDescription* model);
+void drawBarrier(ObjectDescription* model);
 #endif // !_draw

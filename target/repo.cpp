@@ -36,8 +36,11 @@ ObjectDescription* CreateCannon(ObjectDescription* repo)
 	o->x = -0.5f;
 	o->y = 0.0f;
 	o->alpha = 0.0f;
-	o->dx = 0;
-	o->dy = 0;
+//	o->dx = 0;
+//	o->dy = 0;
+	o->dx = 0.01;
+	o->dy = 0.02;
+
 	o->lastShootTimeCannon = 0;
 	o->shootCannon = false;
 	o->enable = true;
@@ -75,7 +78,25 @@ ObjectDescription* CreateMissleCannon(ObjectDescription* repo, ObjectDescription
 	o->enable = true;
 	o->modelAndDraw = drawMissleCannon;
 	return add(o, repo);
-};
+}
+ObjectDescription* CreateBarrier(ObjectDescription* repo, int side)
+{
+	ObjectDescription* res = repo;
+	for (int i = 0; i < BARRIER_COUNT; i++) {
+		ObjectDescription* o = new ObjectDescription;
+		o->kind = BARRIER;
+		o->x = fabs(randomFloat())*side;
+		o->y = randomFloat();
+		o->alpha = 0.0f;
+		o->dx = 0.0f;
+		o->dy = 0.0f;
+		o->enable = true;
+		o->modelAndDraw = drawBarrier;
+		res = add(o, res);
+	}
+	return res;
+}
+;
 
 
 void DrawAll(ObjectDescription* repo) {
@@ -98,11 +119,11 @@ void CheckAllMisselAndTarget (ObjectDescription* repo) {
 	while (current != NULL) {
 		   //current->modelAndDraw(current);
 
-		if (current->kind = MISSLE) {
-			ObjectDescription* other = current->next;
+		if (current->kind == MISSLE) {
+			ObjectDescription* other = current -> next;
 
-			while (other != NULL) {
-				if (delta(current, other) < EXPLOSE) {
+			while (other != NULL)  {
+				if (other->enable  && delta(current, other) < EXPLOSE) {
 					other->enable = false;
 					current->enable = false;
 				}
@@ -113,7 +134,13 @@ void CheckAllMisselAndTarget (ObjectDescription* repo) {
 	}
 }
 
-float delta(ObjectDescription* current, ObjectDescription* other)
+double delta(ObjectDescription* current, ObjectDescription* other)
 {
 	return sqrt(pow(current->x - other->x, 2) + pow(current->y - other->y, 2));
+}
+
+
+float randomFloat()
+{
+	return  -0.9f + (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 2;
 }
