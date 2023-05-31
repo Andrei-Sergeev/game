@@ -20,6 +20,7 @@ float randomFloat()
 
 ObjectDescription* repo = NULL;
 ObjectDescription* luncher = NULL;
+ObjectDescription* cannon = NULL;
 long globalTimerEventCount = 0;
 
 
@@ -38,7 +39,7 @@ void Draw(void) // Window redraw function
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	
+	CheckAllMisselAndTarget(repo);
 	DrawAll(repo);
 
 	glFlush();
@@ -58,15 +59,40 @@ void timf(int value) // Timer function
 	glutTimerFunc(40, timf, 0);
 	// Setup next timer 
 	globalTimerEventCount++;
-	luncher->shoot = (globalTimerEventCount - luncher->lastShootTime >= SHOOT_INTERVAL);
+	luncher->shootLuncher = (globalTimerEventCount - luncher->lastShootTimeLuncher >= SHOOT_INTERVAL);
+	cannon->shootCannon = (globalTimerEventCount - cannon->lastShootTimeCannon >= SHOOT_INTERVAL);
 }
 
 void processKeyEvent(unsigned char key, int x, int y) {
+	if (cannon != NULL && cannon->enable) {
+		switch (key) {
+		case 'w':
+			cannon->dy = 0.01f;
+			break;
+		case 's':
+			cannon->dy = -0.01f;
+			break;
+		case 'a':
+			cannon->dx = -0.01f;
+			break;
+		case 'd':
+			cannon->dx = 0.01f;
+			break;
+		case 'z':
+			if (cannon->shootCannon) {
+				ObjectDescription* missle = CreateMissleCannon(repo, cannon);
+				cannon->lastShootTimeCannon = globalTimerEventCount;
+				repo = missle;
+			}
+			break;
+		}
+	}
 
 }
 
 
 void processSpecialKeyEvent(int key, int x, int y) {
+
 	if (luncher != NULL && luncher->enable) {
 		switch (key) {
 		case GLUT_KEY_UP:
@@ -82,9 +108,9 @@ void processSpecialKeyEvent(int key, int x, int y) {
 			luncher->dx = 0.01f;
 			break;
 		case GLUT_KEY_INSERT:			
-			if (luncher->shoot) {
-				ObjectDescription* missle = CreateMissle(repo, luncher);
-				luncher->lastShootTime = globalTimerEventCount;
+			if (luncher->shootLuncher) {
+				ObjectDescription* missle = CreateMissleLuncher(repo, luncher);
+				luncher->lastShootTimeLuncher = globalTimerEventCount;
 				repo = missle;
 			}
 			break;
@@ -99,6 +125,9 @@ int main(int argc, char* argv[])
 	
 	luncher = CreateLuncher(repo);
 	repo = luncher;
+
+	cannon = CreateCannon(repo);
+	repo = cannon;
 
 	// init random line
 	/*
