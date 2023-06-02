@@ -6,16 +6,9 @@
 #include <gl/glut.h>
 #include <string.h>
 
-#define SHOOT_INTERVAL 40
 
 
 int WindW, WindH;
-
-
-ObjectDescription* repo = NULL;
-ObjectDescription* luncher = NULL;
-ObjectDescription* cannon = NULL;
-long globalTimerEventCount = 0;
 
 
 void Reshape(int width, int height) // Reshape function 
@@ -36,16 +29,15 @@ void DrawText(char* string) {
 	for (int i = 0; i < len; i++) {
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
 	}
-
 }
 
 void Draw(void) // Window redraw function 
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	CheckAllMisselAndTarget(repo);
-	if (luncher->enable && cannon->enable) {
-		DrawAll(repo);
+	CheckAllMisselAndTarget();
+	if (isGameOn()) {
+		DrawAll();
 	}
 	else {
 		char string[] = "This is end of the game";
@@ -68,12 +60,10 @@ void timf(int value) // Timer function
 	// Redraw windows 
 	glutTimerFunc(40, timf, 0);
 	// Setup next timer 
-	globalTimerEventCount++;
-	luncher->shootLuncher = (globalTimerEventCount - luncher->lastShootTimeLuncher >= SHOOT_INTERVAL);
-	cannon->shootCannon = (globalTimerEventCount - cannon->lastShootTimeCannon >= SHOOT_INTERVAL);
 }
 
 void processKeyEvent(unsigned char key, int x, int y) {
+	ObjectDescription* cannon = getCannon();
 	if (cannon != NULL && cannon->enable) {
 		switch (key) {
 		case 'w':
@@ -89,10 +79,9 @@ void processKeyEvent(unsigned char key, int x, int y) {
 			cannon->dx = 0.01f;
 			break;
 		case 'z':
-			if (cannon->shootCannon) {
-				ObjectDescription* missle = CreateMissleCannon(repo, cannon);
-				cannon->lastShootTimeCannon = globalTimerEventCount;
-				repo = missle;
+			if (cannon->shootEnable) {
+				ObjectDescription* missle = CreateMissleCannon(cannon);
+				cannon->lastShootTime = getGlobalTimerEventCount();
 			}
 			break;
 		}
@@ -102,6 +91,7 @@ void processKeyEvent(unsigned char key, int x, int y) {
 
 
 void processSpecialKeyEvent(int key, int x, int y) {
+	ObjectDescription* luncher = getLuncher();
 
 	if (luncher != NULL && luncher->enable) {
 		switch (key) {
@@ -118,10 +108,9 @@ void processSpecialKeyEvent(int key, int x, int y) {
 			luncher->dx = 0.01f;
 			break;
 		case GLUT_KEY_INSERT:			
-			if (luncher->shootLuncher) {
-				ObjectDescription* missle = CreateMissleLuncher(repo, luncher);
-				luncher->lastShootTimeLuncher = globalTimerEventCount;
-				repo = missle;
+			if (luncher->shootEnable) {
+				ObjectDescription* missle = CreateMissleLuncher(luncher);
+				luncher->lastShootTime = getGlobalTimerEventCount();
 			}
 			break;
 		}
@@ -133,14 +122,11 @@ int main(int argc, char* argv[])
 {
 	WindW = 800; WindH = 800;
 	
-	luncher = CreateLuncher(repo);
-	repo = luncher;
+	CreateLuncher();
+	CreateCannon();
 
-	cannon = CreateCannon(repo);
-	repo = cannon;
-
-	repo = CreateBarrier(repo, -1);
-	repo = CreateBarrier(repo, 1);
+	CreateBarrier(-1);
+	CreateBarrier(1);
 
 	glutInit(&argc, argv);
 	glutInitWindowSize(WindW, WindH);
