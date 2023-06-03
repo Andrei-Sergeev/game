@@ -54,6 +54,8 @@ void drawLuncher(ObjectDescription* model)
 {
 	if (model->x+model->dx > LUNCHER_SIZE && model->x+model->dx < 1.0f-LUNCHER_SIZE) model->x += model->dx;
 	if (model->y+model->dy > -1.0f + LUNCHER_SIZE && model->y+model->dy <1-LUNCHER_SIZE) model->y += model->dy;
+	model->shootEnable = (getGlobalTimerEventCount() - model->lastShootTime >= SHOOT_INTERVAL);
+
 	model->dx = 0;
 	model->dy = 0;
 
@@ -62,8 +64,8 @@ void drawLuncher(ObjectDescription* model)
 	//glRotatef(model->alpha, 0.0f, 0.0f, 1.0f);
 
 	glLineWidth(3);
-	if (model->shootLuncher) {
-		glColor3f(0.0f, 0.0f, 0.8f);
+	if (model->shootEnable) {
+		glColor3f(0.0f, 0.0f, 0.8f);		
 	}
 	else {
 		glColor3f(0.0f, 0.0f, 0.4f);
@@ -91,18 +93,23 @@ void drawCannon(ObjectDescription* model)
 
 	if (model->x + model->dx < CANNON_SIZE1 && model->x + model->dx > -1.0f - CANNON_SIZE1) model->x += model->dx; else model->dx *= -1;
 	if (model->y + model->dy > -1.0f + LUNCHER_SIZE && model->y + model->dy < 1 - LUNCHER_SIZE) model->y += model->dy; else model->dy *= -1;
+	
+	model->shootEnable = (getGlobalTimerEventCount() - model->lastShootTime >= SHOOT_INTERVAL);
+	if (model->shootEnable) {
+		ObjectDescription* missle = CreateMissleCannon(getCannon());
+	    getCannon()->lastShootTime = getGlobalTimerEventCount();
+	}
+
 
 //  2 игрока
 //	model->dx = 0;
 //	model->dy = 0;
 
 
-
-
 	glPushMatrix();
 
 	glLineWidth(3);
-	if (model->shootCannon) {
+	if (model->shootEnable) {
 		glColor3f(0.0f, 0.8f, 0.0f);
 	}
 	else {

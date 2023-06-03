@@ -1,28 +1,39 @@
 #pragma once
 #ifndef _repo
 #define _repo
+
 #include "draw.h"
 #define EXPLOSE 0.06f
 #define BARRIER_COUNT 10
+#define SHOOT_INTERVAL 40
 
+
+long getGlobalTimerEventCount();
 
 ObjectDescription* add(ObjectDescription* elem, ObjectDescription* repo);
 
-ObjectDescription* CreateLuncher(ObjectDescription* repo);
+ObjectDescription* CreateLuncher();
 
-ObjectDescription* CreateCannon(ObjectDescription* repo);
+ObjectDescription* CreateCannon();
 
-ObjectDescription* CreateMissleLuncher(ObjectDescription* repo, ObjectDescription* luncher);
-ObjectDescription* CreateMissleCannon(ObjectDescription* repo, ObjectDescription* cannon);
+ObjectDescription* CreateMissleLuncher(ObjectDescription* luncher);
+ObjectDescription* CreateMissleCannon(ObjectDescription* cannon);
 
-ObjectDescription* CreateBarrier(ObjectDescription* repo, int side);
 
-void DrawAll(ObjectDescription* repo);
-void CheckAllMisselAndTarget(ObjectDescription* repo);
+void DrawAll();
+void CheckAllMisselAndTarget();
 
 double delta(ObjectDescription* current, ObjectDescription* other);
 
 float randomFloat();
+
+bool isGameOn();
+
+ObjectDescription* getLuncher();
+
+ObjectDescription* getCannon();
+
+ObjectDescription* CreateBarrier(int side);
 
 
 #endif // !_repo

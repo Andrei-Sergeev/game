@@ -10,10 +10,8 @@ struct ObjectDescription
 	float y, dy;
 	int alpha;
 	bool enable;
-	int lastShootTimeLuncher;
-	int lastShootTimeCannon;
-	bool shootLuncher;
-	bool shootCannon;
+	int lastShootTime;
+	bool shootEnable;
 	void (*modelAndDraw)(ObjectDescription* elem);
 	ObjectDescription* next;
 };
