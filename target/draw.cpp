@@ -41,14 +41,16 @@ void drawMissleCannon(ObjectDescription* model) {
 
 		glPushMatrix();
 		//		glRotatef(model->alpha, 0.0f, 0.0f, 1.0f);
-
+		
 		glBegin(GL_LINES);
 		glVertex2f(model->x - 0.05, model->y);
 		glVertex2f(model->x + 0.05, model->y);
 		glEnd();
 		glPopMatrix();
+		
 	}
 };
+
 
 void drawLuncher(ObjectDescription* model)
 {
@@ -62,7 +64,7 @@ void drawLuncher(ObjectDescription* model)
 
 	glPushMatrix();
 	//glRotatef(model->alpha, 0.0f, 0.0f, 1.0f);
-
+	
 	glLineWidth(3);
 	if (model->shootEnable) {
 		glColor3f(0.0f, 0.0f, 0.8f);		
@@ -71,13 +73,58 @@ void drawLuncher(ObjectDescription* model)
 		glColor3f(0.0f, 0.0f, 0.4f);
 	}
 
+	// Тело танка
 	glBegin(GL_QUADS);
-	glVertex2f(model->x - LUNCHER_SIZE, model->y-LUNCHER_SIZE);
-	glVertex2f(model->x + LUNCHER_SIZE, model->y-LUNCHER_SIZE);
-	glVertex2f(model->x + LUNCHER_SIZE, model->y + LUNCHER_SIZE);
-	glVertex2f(model->x - LUNCHER_SIZE, model->y + LUNCHER_SIZE);
+	glVertex2f(model->x - 0.08, model->y - 0.05);
+	glVertex2f(model->x + 0.05, model->y - 0.05);
+	glVertex2f(model->x + 0.05, model->y + 0.02);
+	glVertex2f(model->x - 0.075, model->y + 0.02);
 	glEnd();
+
+	// Башня танка
+	glBegin(GL_QUADS);
+	glVertex2f(model->x - 0.05, model->y - 0.05);
+	glVertex2f(model->x + 0.03, model->y - 0.05);
+	glVertex2f(model->x + 0.03, model->y + 0.09);
+	glVertex2f(model->x - 0.05, model->y + 0.09);
 	glPopMatrix();
+	glEnd();
+
+	// Дуло танка
+	glBegin(GL_QUADS);
+	glVertex2f(model->x - 0.08, model->y + 0.04);
+	glVertex2f(model->x - 0.05, model->y + 0.04);
+	glVertex2f(model->x - 0.05, model->y + 0.06);
+	glVertex2f(model->x - 0.08, model->y + 0.06);
+	glPopMatrix();
+	glEnd();
+
+	//Колёса танка
+	glColor3f(0.1, 0.1, 0.1); // Черный цвет
+
+	glPushMatrix();
+	glTranslatef(model->x - 0.06, model->y - 0.05, 0); // Первое колесо
+	glutSolidTorus(0.01, 0.01, 10, 10);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(model->x + 0.03, model->y - 0.05, 0); // Второе колесо
+	glutSolidTorus(0.01, 0.01, 10, 10);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(model->x + 0.005, model->y - 0.05, 0); // Третье колесо
+	glutSolidTorus(0.01, 0.01, 10, 10);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(model->x - 0.03, model->y - 0.05, 0); // Четвертое колесо
+	glutSolidTorus(0.01, 0.01, 10, 10);
+	glPopMatrix();
+
+	glFlush();
+
+
 };
 
 
@@ -107,7 +154,7 @@ void drawCannon(ObjectDescription* model)
 
 
 	glPushMatrix();
-
+	
 	glLineWidth(3);
 	if (model->shootEnable) {
 		glColor3f(0.0f, 0.8f, 0.0f);
@@ -116,14 +163,37 @@ void drawCannon(ObjectDescription* model)
 		glColor3f(0.0f, 0.4f, 0.0f);
 	}
 
+	//Тело самолёта
 	glBegin(GL_QUADS);
-	glVertex2f(model->x - LUNCHER_SIZE, model->y - LUNCHER_SIZE);
-	glVertex2f(model->x + LUNCHER_SIZE, model->y - LUNCHER_SIZE);
-	glVertex2f(model->x + LUNCHER_SIZE, model->y + LUNCHER_SIZE);
-	glVertex2f(model->x - LUNCHER_SIZE, model->y + LUNCHER_SIZE);
+	glVertex2f(model->x + 0.063, model->y + 0.02);   // Верхняя правая точка
+	glVertex2f(model->x - 0.06, model->y + 0.02);   // Верхняя левая точка
+	glVertex2f(model->x - 0.06, model->y - 0.02);   // Нижняя левая точка
+	glVertex2f(model->x + 0.07, model->y - 0.02);   // Нижняя правая точка
 	glEnd();
-	glPopMatrix();
+
+	//Крыло нижнее 
+	glBegin(GL_TRIANGLES);
+	glVertex2f(model->x + 0.028,  model->y - 0.02);   //
+	glVertex2f(model->x - 0.028, model->y - 0.08);   //
+	glVertex2f(model->x - 0.015, model->y - 0.02);    //
+	glEnd();
+
+	//Крыло верхнее
+	glBegin(GL_TRIANGLES);
+	glVertex2f(model->x + 0.028, model->y + 0.02);   //
+	glVertex2f(model->x - 0.028, model->y + 0.08);   //
+	glVertex2f(model->x - 0.015, model->y + 0.02);     //
+	glEnd();
+
+	//Хвост
+	glBegin(GL_TRIANGLES);
+	glVertex2f(model->x - 0.045,  model->y + 0.02);   //
+	glVertex2f(model->x - 0.07, model->y + 0.05);   //
+	glVertex2f(model->x - 0.06,  model->y + 0.02);     //
+	glEnd();
+	
 }
+
 
 void drawBarrier(ObjectDescription* model)
 {
