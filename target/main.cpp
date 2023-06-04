@@ -63,27 +63,39 @@ void timf(int value) // Timer function
 }
 
 void processKeyEvent(unsigned char key, int x, int y) {
-	ObjectDescription* cannon = getCannon();
-	if (cannon != NULL && cannon->enable) {
+	ObjectDescription* plain = getPlain();
+	ObjectDescription* luncher = getLuncher();
+	if (plain != NULL && plain->enable) {
 		switch (key) {
 		case 'w':
-			cannon->dy = 0.01f;
+			plain->dy = 0.01f;
 			break;
 		case 's':
-			cannon->dy = -0.01f;
+			plain->dy = -0.01f;
 			break;
 		case 'a':
-			cannon->dx = -0.01f;
+			plain->dx = -0.01f;
 			break;
 		case 'd':
-			cannon->dx = 0.01f;
+			plain->dx = 0.01f;
 			break;
 		case 'z':
-			if (cannon->shootEnable) {
-				ObjectDescription* missle = CreateMissleCannon(cannon);
-				cannon->lastShootTime = getGlobalTimerEventCount();
+			if (plain->shootEnable) {
+				ObjectDescription* missle = CreateMisslePlain(plain);
+				plain->lastShootTime = getGlobalTimerEventCount();
 			}
 			break;
+		case 'n':
+			if (luncher->alpha<170) {
+					luncher->alpha += 10;
+			}
+			break;
+		case 'm':
+			if (luncher->alpha > 10) {
+				luncher->alpha -= 10;
+			}
+			break;
+
 		}
 	}
 
@@ -123,10 +135,9 @@ int main(int argc, char* argv[])
 	WindW = 800; WindH = 800;
 
 	CreateLuncher();
-	CreateCannon();
+	CreatePlain();
 
-	CreateBarrier(-1);
-	CreateBarrier(1);
+	CreateBarrier();
 
 	glutInit(&argc, argv);
 	glutInitWindowSize(WindW, WindH);

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _draw
 #define _draw
-typedef enum { LUNCHER, CANNON, MISSLE, BARRIER } OBJECTKIND;
+typedef enum { LUNCHER, PLAIN, PLAIN_MISSLE, LUNCHER_MISSLE, BARRIER } OBJECTKIND;
 
 struct ObjectDescription
 {
@@ -16,10 +16,11 @@ struct ObjectDescription
 	ObjectDescription* next;
 };
 
-void drawMissleCannon(ObjectDescription* model);
+void drawMisslePlain(ObjectDescription* model);
 void drawMissleLuncher(ObjectDescription* model);
 
 void drawLuncher(ObjectDescription* model);
-void drawCannon(ObjectDescription* model);
+void drawPlain(ObjectDescription* model);
 void drawBarrier(ObjectDescription* model);
+void drawCircle(float cx, float cy, float r, int num_segments);
 #endif // !_draw
