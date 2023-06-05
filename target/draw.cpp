@@ -1,51 +1,46 @@
 #include <gl/glut.h>
 #include "draw.h"
 #include "repo.h"
+#include <corecrt_math.h>
 
 #define LINE_WIDTH 3
 #define LUNCHER_SIZE 0.05f
-#define CANNON_SIZE1 -0.05f
+#define PLAIN_SIZE 0.05f
 
 void drawMissleLuncher(ObjectDescription* model) {
 
-	model->enable = model->x >= -1.0 + model->dx;
+	model->enable = (model->x >= -1.0 + model->dx) && (model->x <= 1.0 - model->dx) && (model->y+model->dy<0.95f);
 
 	if (model->enable) {
 		model->x += model->dx;
+		model->y+= model->dy;
 		model->alpha += 4;
 		if (model->alpha > 360) model->alpha = 0;
 		glLineWidth(3);
 		glColor3f(0.0f, 0.6f, 0.9f);
 
 		glPushMatrix();
-//		glRotatef(model->alpha, 0.0f, 0.0f, 1.0f);
 
 		glBegin(GL_LINES);
-		glVertex2f(model->x-0.05, model->y);
-		glVertex2f(model->x+0.05, model->y);
+		glVertex2f(model->x-0.01, model->y);
+		glVertex2f(model->x+0.01, model->y);
 		glEnd();
 		glPopMatrix();
 	}
 };
 
-void drawMissleCannon(ObjectDescription* model) {
+void drawMisslePlain(ObjectDescription* model) {
 
-	model->enable = model->x >= -1.0 + model->dx;
+	model->enable = (model->x >= -1.0 - model->dx) && (model->x <= 1.0 - model->dx) && (model->y>-1.0+LUNCHER_SIZE);
 
 	if (model->enable) {
 		model->x += model->dx;
-		model->alpha += 4;
-		if (model->alpha > 360) model->alpha = 0;
+		model->y -= 9.8f*(getGlobalTimerEventCount()-model->lastShootTime)*0.001;
 		glLineWidth(3);
 		glColor3f(0.7f, 0.0f, 0.0f);
 
 		glPushMatrix();
-		//		glRotatef(model->alpha, 0.0f, 0.0f, 1.0f);
-		
-		glBegin(GL_LINES);
-		glVertex2f(model->x - 0.05, model->y);
-		glVertex2f(model->x + 0.05, model->y);
-		glEnd();
+		drawCircle(model->x, model->y, 0.01f, 8);		
 		glPopMatrix();
 		
 	}
@@ -54,8 +49,8 @@ void drawMissleCannon(ObjectDescription* model) {
 
 void drawLuncher(ObjectDescription* model)
 {
-	if (model->x+model->dx > LUNCHER_SIZE && model->x+model->dx < 1.0f-LUNCHER_SIZE) model->x += model->dx;
-	if (model->y+model->dy > -1.0f + LUNCHER_SIZE && model->y+model->dy <1-LUNCHER_SIZE) model->y += model->dy;
+	if (model->x+model->dx >-1.0+LUNCHER_SIZE && model->x+model->dx < 1.0f-LUNCHER_SIZE) model->x += model->dx;
+	if (model->y+model->dy > -1.0f + LUNCHER_SIZE && model->y+model->dy <-LUNCHER_SIZE) model->y += model->dy;
 	model->shootEnable = (getGlobalTimerEventCount() - model->lastShootTime >= SHOOT_INTERVAL);
 
 	model->dx = 0;
@@ -73,6 +68,7 @@ void drawLuncher(ObjectDescription* model)
 		glColor3f(0.0f, 0.0f, 0.4f);
 	}
 
+	glPushMatrix();
 	// Тело танка
 	glBegin(GL_QUADS);
 	glVertex2f(model->x - 0.08, model->y - 0.05);
@@ -87,22 +83,24 @@ void drawLuncher(ObjectDescription* model)
 	glVertex2f(model->x + 0.03, model->y - 0.05);
 	glVertex2f(model->x + 0.03, model->y + 0.09);
 	glVertex2f(model->x - 0.05, model->y + 0.09);
-	glPopMatrix();
 	glEnd();
 
-	// Дуло танка
-	glBegin(GL_QUADS);
-	glVertex2f(model->x - 0.08, model->y + 0.04);
-	glVertex2f(model->x - 0.05, model->y + 0.04);
-	glVertex2f(model->x - 0.05, model->y + 0.06);
-	glVertex2f(model->x - 0.08, model->y + 0.06);
-	glPopMatrix();
+	// Пусковая установка
+
+	glLineWidth(7);
+	glColor3f(0.0f, 0.3f, 0.8f);
+	glBegin(GL_LINES);
+	glVertex2f(model->x, model->y);
+	glVertex2f(model->x + 0.1 * cos(model->alpha / 180.0f * 3.1415f), model->y + 0.1 * sin(model->alpha / 180.0f * 3.1415f));
 	glEnd();
+	glPopMatrix();
+	glLineWidth(3);
+
 
 	//Колёса танка
+	glPushMatrix();
 	glColor3f(0.1, 0.1, 0.1); // Черный цвет
 
-	glPushMatrix();
 	glTranslatef(model->x - 0.06, model->y - 0.05, 0); // Первое колесо
 	glutSolidTorus(0.01, 0.01, 10, 10);
 	glPopMatrix();
@@ -122,6 +120,7 @@ void drawLuncher(ObjectDescription* model)
 	glutSolidTorus(0.01, 0.01, 10, 10);
 	glPopMatrix();
 
+
 	glFlush();
 
 
@@ -129,29 +128,20 @@ void drawLuncher(ObjectDescription* model)
 
 
 
-void drawCannon(ObjectDescription* model)
+void drawPlain(ObjectDescription* model)
 {
-	/*   2 игрока
-	if (model->x + model->dx < CANNON_SIZE1 && model->x + model->dx > -1.0f - CANNON_SIZE1) model->x += model->dx;
-	if (model->y + model->dy > -1.0f + LUNCHER_SIZE && model->y + model->dy < 1 - LUNCHER_SIZE) model->y += model->dy;
-	model->dx = 0;
-	model->dy = 0;
-	*/
-
-	if (model->x + model->dx < CANNON_SIZE1 && model->x + model->dx > -1.0f - CANNON_SIZE1) model->x += model->dx; else model->dx *= -1;
-	if (model->y + model->dy > -1.0f + LUNCHER_SIZE && model->y + model->dy < 1 - LUNCHER_SIZE) model->y += model->dy; else model->dy *= -1;
+	
+	model->dy = sin(model->alpha / 180.0f * 3.1415f)*2*PLAIN_SIZE;
+	model->alpha += 6;
+	if (model->x + model->dx <1.0 - PLAIN_SIZE && model->x + model->dx > -1.0f + PLAIN_SIZE) model->x += model->dx; else model->dx *= -1;
+	model->y = 0.75 + model->dy;
+	model->dx += randomFloat() * 0.002;
 	
 	model->shootEnable = (getGlobalTimerEventCount() - model->lastShootTime >= SHOOT_INTERVAL);
 	if (model->shootEnable) {
-		ObjectDescription* missle = CreateMissleCannon(getCannon());
-	    getCannon()->lastShootTime = getGlobalTimerEventCount();
+		ObjectDescription* missle = CreateMisslePlain(getPlain());
+	    getPlain()->lastShootTime = getGlobalTimerEventCount();
 	}
-
-
-//  2 игрока
-//	model->dx = 0;
-//	model->dy = 0;
-
 
 	glPushMatrix();
 	
@@ -203,11 +193,27 @@ void drawBarrier(ObjectDescription* model)
 	glColor3f(0.4f, 0.4f, 0.4f);
 
 	glBegin(GL_LINES);
-	glVertex2f(model->x, model->y - LUNCHER_SIZE);
-	glVertex2f(model->x, model->y + LUNCHER_SIZE);
+	glVertex2f(model->x-LUNCHER_SIZE, model->y);
+	glVertex2f(model->x+LUNCHER_SIZE, model->y);
 	glEnd();
 	glPopMatrix();
 
 }
-;
+
+
+void drawCircle(float cx, float cy, float r, int num_segments)
+{
+	glBegin(GL_LINE_LOOP);
+	for (int ii = 0; ii < num_segments; ii++)
+	{
+		float theta = 2.0f * 3.1415926f * float(ii) / float(num_segments);//get the current angle
+
+		float x = r * cosf(theta);//calculate the x component
+		float y = r * sinf(theta);//calculate the y component
+
+		glVertex2f(x + cx, y + cy);//output vertex
+
+	}
+	glEnd();
+}
 

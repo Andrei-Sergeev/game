@@ -4,7 +4,7 @@
 
 #include "draw.h"
 #define EXPLOSE 0.06f
-#define BARRIER_COUNT 10
+#define BARRIER_COUNT 30
 #define SHOOT_INTERVAL 40
 
 
@@ -14,10 +14,10 @@ ObjectDescription* add(ObjectDescription* elem, ObjectDescription* repo);
 
 ObjectDescription* CreateLuncher();
 
-ObjectDescription* CreateCannon();
+ObjectDescription* CreatePlain();
 
 ObjectDescription* CreateMissleLuncher(ObjectDescription* luncher);
-ObjectDescription* CreateMissleCannon(ObjectDescription* cannon);
+ObjectDescription* CreateMisslePlain(ObjectDescription* plain);
 
 
 void DrawAll();
@@ -31,9 +31,9 @@ bool isGameOn();
 
 ObjectDescription* getLuncher();
 
-ObjectDescription* getCannon();
+ObjectDescription* getPlain();
 
-ObjectDescription* CreateBarrier(int side);
+ObjectDescription* CreateBarrier();
 
 
 #endif // !_repo

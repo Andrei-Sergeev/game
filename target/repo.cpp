@@ -9,7 +9,7 @@ long globalTimerEventCount = 0;
 
 ObjectDescription* repo = NULL;
 ObjectDescription* luncher = NULL;
-ObjectDescription* cannon = NULL;
+ObjectDescription* plain = NULL;
 
 
 long getGlobalTimerEventCount() {
@@ -29,11 +29,11 @@ ObjectDescription* CreateLuncher()
 	// init luncher
 	ObjectDescription* o = new ObjectDescription;
 	o->kind = LUNCHER;
-	o->x = 0.5f;
-	o->y = 0.0f;
-	o->alpha = 0;
-	o->dx = 0;
-	o->dy = 0;
+	o->x = randomFloat()*0.8;
+	o->y = -0.8f;
+	o->alpha = 45;
+	o->dx = 0.0f;
+	o->dy = 0.0f;
 	o->lastShootTime = 0;
 	o->shootEnable = false;
 	o->enable = true;
@@ -42,56 +42,53 @@ ObjectDescription* CreateLuncher()
 	return luncher;
 }
 
-ObjectDescription* CreateCannon()
+ObjectDescription* CreatePlain()
 {
-	// init cannon
+	// init plain
 	ObjectDescription* o = new ObjectDescription;
-	o->kind = CANNON;
-	o->x = -0.5f;
-	o->y = 0.0f;
-	o->alpha = 0;
-//	o->dx = 0;
-//	o->dy = 0;
+	o->kind = PLAIN;
+	o->x = randomFloat();
 	o->dx = 0.01f;
-	o->dy = 0.01f;
+	o->y = 0.5f+0.4f*randomFloat();
+	o->alpha = 180+randomFloat()*180;
 
 	o->lastShootTime = 0;
 	o->shootEnable = false;
 	o->enable = true;
-	o->modelAndDraw = drawCannon;
-	cannon = add(o);
-	return cannon;
+	o->modelAndDraw = drawPlain;
+	plain = add(o);
+	return plain;
 }
 
 ObjectDescription* CreateMissleLuncher(ObjectDescription* luncher)
 {
 	ObjectDescription* o = new ObjectDescription;
-	o->kind = MISSLE;
-	o->x = luncher->x - 2*EXPLOSE;
-	o->y = luncher->y;
-	o->alpha = 0;
-	o->dx = -0.01f;
-	o->dy = 0.0f;
-	o->lastShootTime = 0;
+	o->kind = LUNCHER_MISSLE;
+	o->alpha = luncher->alpha;
+	o->dx = 0.02f*cos(luncher->alpha/180.0*3.1415f);
+	o->dy = 0.02f*sin(luncher->alpha/180.0*3.1415f);
+	o->x = luncher->x +50 * EXPLOSE*o->dx;
+	o->y = luncher->y + 50 * EXPLOSE*o->dy;
+	o->lastShootTime = getGlobalTimerEventCount();
 	o->shootEnable = false;
 	o->enable = true;
 	o->modelAndDraw = drawMissleLuncher;
 	return add(o);
 }
 
-ObjectDescription* CreateMissleCannon(ObjectDescription* cannon)
+ObjectDescription* CreateMisslePlain(ObjectDescription* plain)
 {
 	ObjectDescription* o = new ObjectDescription;
-	o->kind = MISSLE;
-	o->x = cannon->x + cannon->dx+2.0*EXPLOSE;
-	o->y = cannon->y;
+	o->kind = PLAIN_MISSLE;
+	o->x = plain->x + plain->dx+2.0*EXPLOSE;
+	o->y = plain->y;
 	o->alpha = 0;
-	o->dx = 0.01f;
+	o->dx = plain->dx;
 	o->dy = 0.0f;
-	o->lastShootTime = 0;
+	o->lastShootTime = getGlobalTimerEventCount();
 	o->shootEnable = false;
 	o->enable = true;
-	o->modelAndDraw = drawMissleCannon;
+	o->modelAndDraw = drawMisslePlain;
 	return add(o);
 }
 
@@ -115,25 +112,33 @@ void CheckAllMisselAndTarget () {
 	ObjectDescription* current = repo;
 
 	while (current != NULL) {
-		   //current->modelAndDraw(current);
 		switch (current->kind) {
-		case MISSLE: logger << "MISSLE(" << current->x << "," << current->y << "," << current->enable<<");";
-		case CANNON: logger << "CANNON(" << current->x << "," << current->y << "," << current->enable << ");";
-		case LUNCHER: logger << "LUNCHER(" << current->x << "," << current->y << "," << current->enable << ");";
+		case LUNCHER_MISSLE:
+		case PLAIN_MISSLE:
+			logger << "MISSLE(" << current->x << "," << current->y << "," << current->enable << ");"; break;
+		case PLAIN: logger << "PLAIN(" << current->x << "," << current->y << "," << current->enable << ");"; break;
+		case LUNCHER: logger << "LUNCHER(" << current->x << "," << current->y << "," << current->enable << ");"; break;
 		}
 
-		if (current->kind == MISSLE && current ->enable) {
+		if ((current->kind == PLAIN_MISSLE || current->kind == LUNCHER_MISSLE)&& current ->enable) {
 			ObjectDescription* other = current -> next;
 
 			while (other != NULL)  {
 				double d = delta(current, other);
 				if (other->enable  &&  d < EXPLOSE) {
 					switch (other->kind) {
-						case CANNON: logger << "EXPOSED CANNON(" << other->x << "," << other->y << "," << other->enable << ");";
-						case LUNCHER: logger << "EXPLOSED LUNCHER(" << other->x << "," << other->y << "," << other->enable << ");";
+					case PLAIN: other->enable = current->kind == PLAIN_MISSLE;
+								logger << "EXPOSED PLAIN(" << other->x << "," << other->y << "," << other->enable << ");";
+								break;
+					case LUNCHER: 
+							other->enable = current->kind == LUNCHER_MISSLE;
+							logger << "EXPLOSED LUNCHER(" << other->x << "," << other->y << "," << other->enable << ");";
+							break;
+					case BARRIER:
+						other->enable = false;
+						current->enable = false;
+						break;
 					}
-					other->enable = false;
-					current->enable = false;
 				}
 				other = other->next;
 			}
@@ -157,7 +162,7 @@ float randomFloat()
 }
 
 bool isGameOn() {
-	return luncher->enable && cannon->enable;
+	return luncher->enable && plain->enable;
 }
 
 
@@ -165,19 +170,19 @@ ObjectDescription* getLuncher() {
 	return luncher;
 }
 
-ObjectDescription* getCannon() {
-	return cannon;
+ObjectDescription* getPlain() {
+	return plain;
 }
 
 
-ObjectDescription* CreateBarrier(int side)
+ObjectDescription* CreateBarrier()
 {
 	ObjectDescription* res = repo;
 	for (int i = 0; i < BARRIER_COUNT; i++) {
 		ObjectDescription* o = new ObjectDescription;
 		o->kind = BARRIER;
-		o->x = fabs(randomFloat()) * side;
-		o->y = randomFloat();
+		o->x = randomFloat();
+		o->y = randomFloat()*0.5;
 		o->alpha = 0;
 		o->dx = 0.0f;
 		o->dy = 0.0f;
