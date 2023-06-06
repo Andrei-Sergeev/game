@@ -4,7 +4,7 @@
 
 #include "draw.h"
 #define EXPLOSE 0.06f
-#define BARRIER_COUNT 30
+#define BARRIER_COUNT 20
 #define SHOOT_INTERVAL 40
 
 

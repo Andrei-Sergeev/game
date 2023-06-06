@@ -135,7 +135,6 @@ void drawPlain(ObjectDescription* model)
 	model->alpha += 6;
 	if (model->x + model->dx <1.0 - PLAIN_SIZE && model->x + model->dx > -1.0f + PLAIN_SIZE) model->x += model->dx; else model->dx *= -1;
 	model->y = 0.75 + model->dy;
-	model->dx += randomFloat() * 0.002;
 	
 	model->shootEnable = (getGlobalTimerEventCount() - model->lastShootTime >= SHOOT_INTERVAL);
 	if (model->shootEnable) {
@@ -186,7 +185,10 @@ void drawPlain(ObjectDescription* model)
 
 
 void drawBarrier(ObjectDescription* model)
+
+
 {
+	if (model->x + model->dx <1.0 - PLAIN_SIZE && model->x + model->dx > -1.0f + PLAIN_SIZE) model->x += model->dx; else model->dx *= -1;
 	glPushMatrix();
 
 	glLineWidth(4);
@@ -217,3 +219,98 @@ void drawCircle(float cx, float cy, float r, int num_segments)
 	glEnd();
 }
 
+
+void drawBack() {
+	glBegin(GL_POLYGON);//отрисовка неба
+	glColor3ub(24, 188, 206);
+	glVertex2f(1, 1);
+	glVertex2f(1, -0.5);
+	glColor3ub(152, 246, 255);
+	glVertex2f(-1, -0.5);
+	glVertex2f(-1, 1);
+	glEnd();
+
+	glBegin(GL_POLYGON);//отрисовка поля
+	glColor3ub(58, 148, 12);
+	glVertex2f(-1, 0);
+	glVertex2f(-0.5, 0.1);
+	glVertex2f(0, 0.05);
+	glVertex2f(1, -0.15);
+	glVertex2f(1, -1);
+	glVertex2f(-1, -1);
+	glEnd();
+
+	glBegin(GL_POLYGON);//отрисовка контура светлых пятен
+
+	glColor3ub(85, 185, 35);
+	glVertex2f(-1, 0);
+	glVertex2f(-0.8, 0.04);
+	glVertex2f(-0.3, 0.07);
+	glVertex2f(0, -0.05);
+	glVertex2f(0.8, -0.3);
+	glVertex2f(1, -0.2);
+	glVertex2f(1, -0.7);
+	glVertex2f(0.4, -0.6);
+	glVertex2f(-0.3, -0.5);
+	glVertex2f(-0.8, -0.45);
+	glEnd();
+
+	glBegin(GL_POLYGON);//отрисовка светлых пятен
+	glColor3ub(99, 215, 41);
+	glVertex2f(-1, 0);
+	glVertex2f(-0.8, 0.04);
+	glVertex2f(-0.2, 0.0);
+	glVertex2f(0, -0.2);
+	glVertex2f(-0.4, -0.15);
+	glVertex2f(-0.5, -0.25);
+	glVertex2f(-0.7, -0.4);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex2f(-0.5, -0.25);
+	glVertex2f(-0.3, -0.2);
+	glVertex2f(0.4, -0.4);
+	glVertex2f(-0.15, -0.45);
+	glVertex2f(-0.7, -0.4);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex2f(0.6, -0.45);
+	glVertex2f(1, -0.3);
+	glVertex2f(1, -0.5);
+	glEnd();
+
+	glBegin(GL_POLYGON);//Создание чёрных пятен
+	glColor3ub(0, 0, 0);
+	glVertex2f(-1, -0.55);
+	glVertex2f(-1, -0.65);
+	glVertex2f(-0.1, -0.6);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glVertex2f(-0.1, -0.599);
+	glVertex2f(1, -0.75);
+	glEnd();
+
+	glBegin(GL_POLYGON);//Создание полянки под чёрной четрой
+	glColor3ub(5, 88, 2);
+	glVertex2f(-1, -0.65);
+	glVertex2f(-0.1, -0.6);
+	glVertex2f(1, -0.75);
+	glVertex2f(1, -1);
+	glVertex2f(-1, -1);
+	glEnd();
+
+	glBegin(GL_POLYGON);//создание пятен на полянке под чертой
+	glColor3ub(5, 125, 1);
+	glVertex2f(-0.3, -0.7);
+	glVertex2f(-0.8, -0.9);
+	glVertex2f(-0.2, -0.8);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex2f(0.2, -0.7);
+	glVertex2f(0.8, -0.9);
+	glVertex2f(0.2, -0.8);
+	glEnd();
+}
