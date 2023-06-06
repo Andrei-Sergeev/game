@@ -23,4 +23,5 @@ void drawLuncher(ObjectDescription* model);
 void drawPlain(ObjectDescription* model);
 void drawBarrier(ObjectDescription* model);
 void drawCircle(float cx, float cy, float r, int num_segments);
+void drawBack();
 #endif // !_draw

@@ -36,10 +36,11 @@ void Draw(void) // Window redraw function
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	CheckAllMisselAndTarget();
-	if (isGameOn()) {
+	drawBack();
+	if (isGameOn()) {		
 		DrawAll();
 	}
-	else {
+	else {		
 		char string[] = "This is end of the game";
 		DrawText(string);
 	}

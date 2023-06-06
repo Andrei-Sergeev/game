@@ -182,9 +182,9 @@ ObjectDescription* CreateBarrier()
 		ObjectDescription* o = new ObjectDescription;
 		o->kind = BARRIER;
 		o->x = randomFloat();
-		o->y = randomFloat()*0.5;
+		o->y = 0.5+randomFloat()*0.2;
 		o->alpha = 0;
-		o->dx = 0.0f;
+		o->dx = 0.01f+randomFloat()*0.01;
 		o->dy = 0.0f;
 		o->enable = true;
 		o->modelAndDraw = drawBarrier;
